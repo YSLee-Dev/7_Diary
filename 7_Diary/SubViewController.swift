@@ -1,14 +1,13 @@
 //
-//  ViewController.swift
+//  SubViewController.swift
 //  7_Diary
 //
-//  Created by 이윤수 on 2021/12/07.
+//  Created by 이윤수 on 2021/12/08.
 //
 
 import UIKit
 
-class ViewController: UIViewController {
-
+class SubViewController : UIViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -16,4 +15,3 @@ class ViewController: UIViewController {
         
     }
 }
-
