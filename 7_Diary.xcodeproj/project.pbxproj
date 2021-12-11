@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D477A65E2764831400C0E408 /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D477A65D2764831400C0E408 /* CollectionViewCell.swift */; };
+		D477A66027648EAB00C0E408 /* SubCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D477A65F27648EAB00C0E408 /* SubCollectionViewCell.swift */; };
+		D477A6622764916700C0E408 /* AddViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D477A6612764916700C0E408 /* AddViewController.swift */; };
 		D49EEFCE275F619300B23AE0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49EEFCD275F619300B23AE0 /* AppDelegate.swift */; };
 		D49EEFD0275F619300B23AE0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49EEFCF275F619300B23AE0 /* SceneDelegate.swift */; };
 		D49EEFD2275F619300B23AE0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49EEFD1275F619300B23AE0 /* ViewController.swift */; };
@@ -17,6 +20,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D477A65D2764831400C0E408 /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
+		D477A65F27648EAB00C0E408 /* SubCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubCollectionViewCell.swift; sourceTree = "<group>"; };
+		D477A6612764916700C0E408 /* AddViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddViewController.swift; sourceTree = "<group>"; };
 		D49EEFCA275F619200B23AE0 /* 7_Diary.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 7_Diary.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D49EEFCD275F619300B23AE0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D49EEFCF275F619300B23AE0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -61,7 +67,10 @@
 				D49EEFCD275F619300B23AE0 /* AppDelegate.swift */,
 				D49EEFCF275F619300B23AE0 /* SceneDelegate.swift */,
 				D49EEFD1275F619300B23AE0 /* ViewController.swift */,
+				D477A6612764916700C0E408 /* AddViewController.swift */,
+				D477A65D2764831400C0E408 /* CollectionViewCell.swift */,
 				D49EEFE12760AF5300B23AE0 /* SubViewController.swift */,
+				D477A65F27648EAB00C0E408 /* SubCollectionViewCell.swift */,
 				D49EEFD3275F619300B23AE0 /* Main.storyboard */,
 				D49EEFD6275F619800B23AE0 /* Assets.xcassets */,
 				D49EEFD8275F619800B23AE0 /* LaunchScreen.storyboard */,
@@ -140,6 +149,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D477A65E2764831400C0E408 /* CollectionViewCell.swift in Sources */,
+				D477A66027648EAB00C0E408 /* SubCollectionViewCell.swift in Sources */,
+				D477A6622764916700C0E408 /* AddViewController.swift in Sources */,
 				D49EEFD2275F619300B23AE0 /* ViewController.swift in Sources */,
 				D49EEFCE275F619300B23AE0 /* AppDelegate.swift in Sources */,
 				D49EEFD0275F619300B23AE0 /* SceneDelegate.swift in Sources */,
