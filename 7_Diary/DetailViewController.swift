@@ -1,14 +1,14 @@
 //
-//  AddViewController.swift
+//  DetailViewController.swift
 //  7_Diary
 //
-//  Created by 이윤수 on 2021/12/11.
+//  Created by 이윤수 on 2021/12/18.
 //
 
 import UIKit
 
-class AddViewController: UIViewController {
-    
+class DetailViewController: UIViewController {
+
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
@@ -25,14 +25,12 @@ class AddViewController: UIViewController {
         btn.setTitle("< 일기장으로", for: .normal)
         btn.setTitleColor(.white, for: .normal)
         btn.translatesAutoresizingMaskIntoConstraints = false
-        btn.addTarget(self, action: #selector(BackBtnClick), for: .touchUpInside)
         return btn
     }()
     
     var titleTF: UITextField = {
         let tf = UITextField()
         tf.borderStyle = .none
-        tf.attributedPlaceholder = NSAttributedString(string: "제목을 입력하세요.",attributes: [NSAttributedString.Key.foregroundColor :  UIColor(hue: 0, saturation: 0, brightness: 0.83, alpha: 1.0)])
         tf.translatesAutoresizingMaskIntoConstraints = false
         return tf
     }()
@@ -44,17 +42,16 @@ class AddViewController: UIViewController {
         return view
     }()
     
-    var dateTF : UITextField =  {
+    var dataTF : UITextField =  {
         let tf = UITextField()
         tf.borderStyle = .none
-        tf.attributedPlaceholder = NSAttributedString(string: "날짜를 선택하세요.",attributes: [NSAttributedString.Key.foregroundColor :  UIColor(hue: 0, saturation: 0, brightness: 0.83, alpha: 1.0)])
         tf.translatesAutoresizingMaskIntoConstraints = false
         return tf
     }()
     
-    var okBtn : UIButton = {
+    var explanation : UIButton = {
         let btn = UIButton()
-        btn.setTitle("저장", for: .normal)
+        btn.setTitle("삭제", for: .normal)
         btn.setTitleColor(UIColor(hue: 0, saturation: 0, brightness: 0.83, alpha: 1.0), for: .normal)
         btn.translatesAutoresizingMaskIntoConstraints = false
         return btn
@@ -66,18 +63,11 @@ class AddViewController: UIViewController {
         tv.translatesAutoresizingMaskIntoConstraints = false
         return tv
     }()
-    
-    private let datePicker = UIDatePicker()
-    private var dateS:Date?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.view.backgroundColor = .white
-        
-        // 네비게이션 숨김 및 제스처 동작 가능 구문
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
-        self.navigationController?.interactivePopGestureRecognizer?.delegate = nil
         
         self.view.addSubview(self.titleBG)
         NSLayoutConstraint.activate([
@@ -109,12 +99,12 @@ class AddViewController: UIViewController {
             self.dateBG.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor)
         ])
         
-        self.dateBG.addSubview(self.dateTF)
+        self.dateBG.addSubview(self.dataTF)
         NSLayoutConstraint.activate([
-            self.dateTF.heightAnchor.constraint(equalTo: self.dateBG.heightAnchor),
-            self.dateTF.centerYAnchor.constraint(equalTo: self.dateTF.centerYAnchor),
-            self.dateTF.leadingAnchor.constraint(equalTo: self.titleBG.leadingAnchor, constant: 10),
-            self.dateTF.trailingAnchor.constraint(equalTo: self.titleBG.trailingAnchor, constant: -10)
+            self.dataTF.heightAnchor.constraint(equalTo: self.dateBG.heightAnchor),
+            self.dataTF.centerYAnchor.constraint(equalTo: self.dataTF.centerYAnchor),
+            self.dataTF.leadingAnchor.constraint(equalTo: self.titleBG.leadingAnchor, constant: 10),
+            self.dataTF.trailingAnchor.constraint(equalTo: self.titleBG.trailingAnchor, constant: -10)
         ])
         
         self.view.addSubview(self.contentsTV)
@@ -125,70 +115,12 @@ class AddViewController: UIViewController {
             self.contentsTV.bottomAnchor.constraint(equalTo: self.view.centerYAnchor, constant: -10)
         ])
         
-        self.okBtn.isEnabled = false
-        self.view.addSubview(self.okBtn)
+        self.view.addSubview(self.explanation)
         NSLayoutConstraint.activate([
-            self.okBtn.topAnchor.constraint(equalTo: self.contentsTV.bottomAnchor, constant: 10),
-            self.okBtn.leadingAnchor.constraint(equalTo: self.titleBG.leadingAnchor, constant: 10),
-            self.okBtn.trailingAnchor.constraint(equalTo: self.titleBG.trailingAnchor, constant: -10)
+            self.explanation.topAnchor.constraint(equalTo: self.contentsTV.bottomAnchor, constant: 10),
+            self.explanation.leadingAnchor.constraint(equalTo: self.titleBG.leadingAnchor, constant: 10),
+            self.explanation.trailingAnchor.constraint(equalTo: self.titleBG.trailingAnchor, constant: -10)
         ])
         
-        DatePickerFunc()
-        inputCheck()
-        
-    }
-    
-    private func DatePickerFunc(){
-        self.datePicker.datePickerMode = .date
-        self.datePicker.preferredDatePickerStyle = .inline
-        self.datePicker.addTarget(self, action: #selector(datePickerValue(_:)), for: .valueChanged)
-        self.datePicker.locale = Locale(identifier: "ko-KR")
-        self.dateTF.inputView = self.datePicker
-    }
-    
-    @objc func datePickerValue(_ dataPicker:UIDatePicker){
-        let formmater = DateFormatter()
-        formmater.dateFormat = "yyyy.MM.dd(EEEEE)"
-        formmater.locale = Locale(identifier: "ko_KR")
-        self.dateS = self.datePicker.date
-        self.dateTF.text = formmater.string(from: self.datePicker.date)
-        self.dateTF.sendActions(for: .editingChanged)
-    }
-    
-    //@objc func test(_ sender:Any){
-    //    resignFirstResponder()
-    //}
-    
-    // 텍스트 입력 여부 확인
-    private func inputCheck(){
-        self.contentsTV.delegate = self
-        self.titleTF.addTarget(self, action: #selector(textFiledCheck(_:)), for: .editingChanged)
-        self.dateTF.addTarget(self, action: #selector(textFiledCheck(_:)), for: .editingChanged)
-    }
-    
-    @objc func textFiledCheck(_ textField : UITextField){
-        self.inputFieldCheck()
-    }
-    
-    // 백버튼 클릭
-    @objc func BackBtnClick(){
-        self.navigationController?.popViewController(animated: true)
-    }
-    
-    // 키보드 내려가게
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.view.endEditing(true)
-    }
-    
-    // 텍스트 입력 여부 확인
-    private func inputFieldCheck(){
-        self.okBtn.isEnabled = !(self.titleTF.text?.isEmpty ?? true) && !(self.dateTF.text?.isEmpty ?? true) && !self.contentsTV.text.isEmpty
-    }
-    
-}
-
-extension AddViewController:UITextViewDelegate{
-    func textViewDidChange(_ textView: UITextView) {
-        self.inputFieldCheck()
     }
 }
