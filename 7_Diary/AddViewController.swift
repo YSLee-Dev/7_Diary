@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol AddDiaryDelegate:AnyObject {
+    func valueRegister(diary:Diary)
+}
+
 class AddViewController: UIViewController {
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -33,6 +37,7 @@ class AddViewController: UIViewController {
         let tf = UITextField()
         tf.borderStyle = .none
         tf.attributedPlaceholder = NSAttributedString(string: "제목을 입력하세요.",attributes: [NSAttributedString.Key.foregroundColor :  UIColor(hue: 0, saturation: 0, brightness: 0.83, alpha: 1.0)])
+        tf.textColor = .white
         tf.translatesAutoresizingMaskIntoConstraints = false
         return tf
     }()
@@ -48,6 +53,7 @@ class AddViewController: UIViewController {
         let tf = UITextField()
         tf.borderStyle = .none
         tf.attributedPlaceholder = NSAttributedString(string: "날짜를 선택하세요.",attributes: [NSAttributedString.Key.foregroundColor :  UIColor(hue: 0, saturation: 0, brightness: 0.83, alpha: 1.0)])
+        tf.textColor = .white
         tf.translatesAutoresizingMaskIntoConstraints = false
         return tf
     }()
@@ -55,7 +61,9 @@ class AddViewController: UIViewController {
     var okBtn : UIButton = {
         let btn = UIButton()
         btn.setTitle("저장", for: .normal)
-        btn.setTitleColor(UIColor(hue: 0, saturation: 0, brightness: 0.83, alpha: 1.0), for: .normal)
+        btn.setTitleColor(UIColor(hue: 0, saturation: 0, brightness: 0.83, alpha: 1.0), for: .disabled)
+        btn.setTitleColor(.black, for: .normal)
+        btn.addTarget(self, action: #selector(saveBtnClick(_:)), for: .touchUpInside)
         btn.translatesAutoresizingMaskIntoConstraints = false
         return btn
     }()
@@ -69,16 +77,24 @@ class AddViewController: UIViewController {
     
     private let datePicker = UIDatePicker()
     private var dateS:Date?
+    weak var delegate:AddDiaryDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.view.backgroundColor = .white
         
         // 네비게이션 숨김 및 제스처 동작 가능 구문
         self.navigationController?.setNavigationBarHidden(true, animated: false)
         self.navigationController?.interactivePopGestureRecognizer?.delegate = nil
         
+        
+        viewSetup()
+        datePickerFunc()
+        inputCheck()
+        
+    }
+    
+    private func viewSetup(){
         self.view.addSubview(self.titleBG)
         NSLayoutConstraint.activate([
             self.titleBG.topAnchor.constraint(equalTo: self.view.topAnchor),
@@ -132,15 +148,11 @@ class AddViewController: UIViewController {
             self.okBtn.leadingAnchor.constraint(equalTo: self.titleBG.leadingAnchor, constant: 10),
             self.okBtn.trailingAnchor.constraint(equalTo: self.titleBG.trailingAnchor, constant: -10)
         ])
-        
-        DatePickerFunc()
-        inputCheck()
-        
     }
     
-    private func DatePickerFunc(){
+    private func datePickerFunc(){
         self.datePicker.datePickerMode = .date
-        self.datePicker.preferredDatePickerStyle = .inline
+        self.datePicker.preferredDatePickerStyle = .wheels
         self.datePicker.addTarget(self, action: #selector(datePickerValue(_:)), for: .valueChanged)
         self.datePicker.locale = Locale(identifier: "ko-KR")
         self.dateTF.inputView = self.datePicker
@@ -154,10 +166,6 @@ class AddViewController: UIViewController {
         self.dateTF.text = formmater.string(from: self.datePicker.date)
         self.dateTF.sendActions(for: .editingChanged)
     }
-    
-    //@objc func test(_ sender:Any){
-    //    resignFirstResponder()
-    //}
     
     // 텍스트 입력 여부 확인
     private func inputCheck(){
@@ -183,6 +191,16 @@ class AddViewController: UIViewController {
     // 텍스트 입력 여부 확인
     private func inputFieldCheck(){
         self.okBtn.isEnabled = !(self.titleTF.text?.isEmpty ?? true) && !(self.dateTF.text?.isEmpty ?? true) && !self.contentsTV.text.isEmpty
+    }
+    
+    // 저장버튼 클릭
+    @objc func saveBtnClick(_ sender:Any){
+        guard let title = self.titleTF.text else {return}
+        guard let contents = self.contentsTV.text else {return}
+        guard let date = self.dateS else {return}
+        let diary = Diary(title: title, contents: contents, date: date, star: false)
+        self.delegate?.valueRegister(diary: diary)
+        self.navigationController?.popViewController(animated: true)
     }
     
 }

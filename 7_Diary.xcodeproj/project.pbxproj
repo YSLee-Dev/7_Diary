@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D46DC58D27707ED300BD4DCB /* Diary.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46DC58C27707ED300BD4DCB /* Diary.swift */; };
 		D477A65E2764831400C0E408 /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D477A65D2764831400C0E408 /* CollectionViewCell.swift */; };
 		D477A66027648EAB00C0E408 /* SubCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D477A65F27648EAB00C0E408 /* SubCollectionViewCell.swift */; };
 		D477A6622764916700C0E408 /* AddViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D477A6612764916700C0E408 /* AddViewController.swift */; };
@@ -21,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D46DC58C27707ED300BD4DCB /* Diary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Diary.swift; sourceTree = "<group>"; };
 		D477A65D2764831400C0E408 /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		D477A65F27648EAB00C0E408 /* SubCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubCollectionViewCell.swift; sourceTree = "<group>"; };
 		D477A6612764916700C0E408 /* AddViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddViewController.swift; sourceTree = "<group>"; };
@@ -70,6 +72,7 @@
 				D49EEFCF275F619300B23AE0 /* SceneDelegate.swift */,
 				D49EEFD1275F619300B23AE0 /* ViewController.swift */,
 				D477A6612764916700C0E408 /* AddViewController.swift */,
+				D46DC58C27707ED300BD4DCB /* Diary.swift */,
 				D4A80CB3276DB2610050E88F /* DetailViewController.swift */,
 				D477A65D2764831400C0E408 /* CollectionViewCell.swift */,
 				D49EEFE12760AF5300B23AE0 /* SubViewController.swift */,
@@ -157,6 +160,7 @@
 				D477A6622764916700C0E408 /* AddViewController.swift in Sources */,
 				D49EEFD2275F619300B23AE0 /* ViewController.swift in Sources */,
 				D49EEFCE275F619300B23AE0 /* AppDelegate.swift in Sources */,
+				D46DC58D27707ED300BD4DCB /* Diary.swift in Sources */,
 				D49EEFD0275F619300B23AE0 /* SceneDelegate.swift in Sources */,
 				D49EEFE22760AF5300B23AE0 /* SubViewController.swift in Sources */,
 				D4A80CB4276DB2610050E88F /* DetailViewController.swift in Sources */,

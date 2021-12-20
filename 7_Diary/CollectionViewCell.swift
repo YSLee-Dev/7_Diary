@@ -19,31 +19,36 @@ class CollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func set(){
+    var title:UILabel = {
         let title = UILabel()
         title.translatesAutoresizingMaskIntoConstraints = false
         title.font = UIFont.boldSystemFont(ofSize: 15)
         title.textAlignment = .center
         title.numberOfLines = 1
-        
-        self.addSubview(title)
-        
+        return title
+    }()
+    
+    var date:UILabel = {
         let date = UILabel()
         date.translatesAutoresizingMaskIntoConstraints = false
         date.font = UIFont.systemFont(ofSize: 13)
         date.textAlignment = .left
         date.numberOfLines = 1
-        
-        self.addSubview(date)
+        return date
+    }()
+    
+    func set(){
+        self.addSubview(self.title)
+        self.addSubview(self.date)
         
         NSLayoutConstraint.activate([
-            title.topAnchor.constraint(equalTo: self.topAnchor, constant: 5),
-            title.widthAnchor.constraint(equalTo: self.widthAnchor, constant: -20),
-            title.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+            self.title.topAnchor.constraint(equalTo: self.topAnchor, constant: 5),
+            self.title.widthAnchor.constraint(equalTo: self.widthAnchor, constant: -20),
+            self.title.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             
-            date.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -5),
-            date.widthAnchor.constraint(equalTo: self.widthAnchor, constant: -20),
-            date.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+            self.date.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -5),
+            self.date.widthAnchor.constraint(equalTo: self.widthAnchor, constant: -20),
+            self.date.centerXAnchor.constraint(equalTo: self.centerXAnchor),
         ])
     }
 }
