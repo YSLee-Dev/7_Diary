@@ -28,8 +28,6 @@ class ViewController: UIViewController {
         self.view.backgroundColor = .white
         
         viewSet()
-        addDiary()
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -62,13 +60,9 @@ class ViewController: UIViewController {
         return formmater.string(from: date)
     }
     
-    private func addDiary(){
-        let addVC = AddViewController()
-        addVC.delegate = self
-    }
-    
     @objc func addBtnClick(){
         let addC = AddViewController()
+        addC.delegate = self
         self.navigationController?.pushViewController(addC, animated: true)
     }
 }
@@ -77,6 +71,8 @@ class ViewController: UIViewController {
 extension ViewController : AddDiaryDelegate{
     func valueRegister(diary: Diary) {
         self.diaryList.append(diary)
+        self.collectionView.reloadData()
+        print(self.diaryList)
     }
 }
 
@@ -105,4 +101,8 @@ extension ViewController :UICollectionViewDelegate{
 // 컬렉션 뷰의 셀 위치? 관리
 extension ViewController:UICollectionViewDelegateFlowLayout{
     
+    // 셀의 사이즈 결정
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: UIScreen.main.bounds.width / 2 - 20, height: 100)
+    }
 }

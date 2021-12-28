@@ -44,7 +44,7 @@ class SubCollectionViewCell: UICollectionViewCell {
         
         NSLayoutConstraint.activate([
             title.topAnchor.constraint(equalTo: self.topAnchor, constant: 5),
-            title.widthAnchor.constraint(equalTo: self.widthAnchor, constant: -20),
+            title.widthAnchor.constraint(equalTo: self.widthAnchor),
             title.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             
             contents.topAnchor.constraint(equalTo: contents.bottomAnchor, constant: 10),
