@@ -23,7 +23,7 @@ class CollectionViewCell: UICollectionViewCell {
         let title = UILabel()
         title.translatesAutoresizingMaskIntoConstraints = false
         title.font = UIFont.boldSystemFont(ofSize: 15)
-        title.textAlignment = .center
+        title.textAlignment = .left
         title.numberOfLines = 1
         return title
     }()
@@ -32,7 +32,7 @@ class CollectionViewCell: UICollectionViewCell {
         let date = UILabel()
         date.translatesAutoresizingMaskIntoConstraints = false
         date.font = UIFont.systemFont(ofSize: 13)
-        date.textAlignment = .left
+        date.textAlignment = .right
         date.numberOfLines = 1
         return date
     }()
@@ -40,15 +40,18 @@ class CollectionViewCell: UICollectionViewCell {
     func set(){
         self.addSubview(self.title)
         self.addSubview(self.date)
+        self.layer.borderWidth = 0.5
+        self.layer.borderColor = UIColor.gray.cgColor
+        self.layer.cornerRadius = 15
         
         NSLayoutConstraint.activate([
-            self.title.topAnchor.constraint(equalTo: self.topAnchor, constant: 5),
-            self.title.widthAnchor.constraint(equalTo: self.widthAnchor, constant: -20),
-            self.title.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+            self.title.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            self.title.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
+            self.title.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.7),
             
-            self.date.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -5),
-            self.date.widthAnchor.constraint(equalTo: self.widthAnchor, constant: -20),
-            self.date.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+            self.date.leadingAnchor.constraint(equalTo: self.title.trailingAnchor),
+            self.date.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            self.date.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.25),
         ])
     }
 }

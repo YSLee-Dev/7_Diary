@@ -10,7 +10,11 @@ import UIKit
 class ViewController: UIViewController {
     
     private var cellId = "cell"
-    private var diaryList = [Diary]()
+    private var diaryList = [Diary](){
+        didSet {
+            self.saveData()
+        }
+    }
 
     var collectionView : UICollectionView = {
         
@@ -19,6 +23,7 @@ class ViewController: UIViewController {
         var cv = UICollectionView(frame: .null, collectionViewLayout: flow)
         cv.translatesAutoresizingMaskIntoConstraints = false
         cv.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        cv.alwaysBounceVertical = true
         cv.backgroundColor = .white
         
         return cv
@@ -28,10 +33,12 @@ class ViewController: UIViewController {
         self.view.backgroundColor = .white
         
         viewSet()
+        loadData()
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        self.navigationController?.setNavigationBarHidden(false, animated: true)
+       
     }
     
     private func viewSet(){
@@ -39,7 +46,6 @@ class ViewController: UIViewController {
         self.collectionView.register(CollectionViewCell.self, forCellWithReuseIdentifier: cellId)
         self.navigationItem.title = "일기장"
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "일기추가", style: .done, target: self, action: #selector(addBtnClick))
-        
         
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
@@ -60,6 +66,37 @@ class ViewController: UIViewController {
         return formmater.string(from: date)
     }
     
+    private func saveData(){
+        let data = self.diaryList.map{
+            [
+                "title":$0.title,
+                "contents":$0.contents,
+                "star":$0.star,
+                "date":$0.date
+            ]
+        }
+        let ud = UserDefaults.standard
+        ud.setValue(data, forKey: "diaryList")
+        print("저장완료")
+    }
+    
+    private func loadData(){
+        let ud = UserDefaults.standard
+        guard let data = ud.value(forKey: "diaryList") as? [[String:Any]] else{  return }
+        self.diaryList = data.compactMap{
+            guard let title = $0["title"] as? String else{return nil}
+            guard let contents = $0["contents"] as? String else{return nil}
+            guard let star = $0["star"] as? Bool else{return nil}
+            guard let date = $0["date"] as? Date else{return nil}
+            
+            return Diary(title: title, contents: contents, date: date, star: star)
+        }
+        self.diaryList = diaryList.sorted(by: {
+            $0.date.compare($1.date) == .orderedDescending
+        })
+        
+    }
+    
     @objc func addBtnClick(){
         let addC = AddViewController()
         addC.delegate = self
@@ -71,8 +108,10 @@ class ViewController: UIViewController {
 extension ViewController : AddDiaryDelegate{
     func valueRegister(diary: Diary) {
         self.diaryList.append(diary)
+        self.diaryList = diaryList.sorted(by: {
+            $0.date.compare($1.date) == .orderedDescending
+        })
         self.collectionView.reloadData()
-        print(self.diaryList)
     }
 }
 
@@ -94,15 +133,15 @@ extension ViewController: UICollectionViewDataSource{
     
     
 }
-extension ViewController :UICollectionViewDelegate{
+extension ViewController : UICollectionViewDelegate{
     
 }
 
 // 컬렉션 뷰의 셀 위치? 관리
 extension ViewController:UICollectionViewDelegateFlowLayout{
     
-    // 셀의 사이즈 결정
+    // 셀의 사이즈 결
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: UIScreen.main.bounds.width / 2 - 20, height: 100)
+        return CGSize(width: UIScreen.main.bounds.width - ((self.navigationController?.systemMinimumLayoutMargins.leading)! * 2), height: 50)
     }
 }
