@@ -45,13 +45,14 @@ class CollectionViewCell: UICollectionViewCell {
         self.layer.cornerRadius = 15
         
         NSLayoutConstraint.activate([
-            self.title.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            self.date.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
             self.title.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
-            self.title.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.7),
             
-            self.date.leadingAnchor.constraint(equalTo: self.title.trailingAnchor),
+            self.title.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            self.title.trailingAnchor.constraint(equalTo: self.date.leadingAnchor),
+            
             self.date.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-            self.date.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.25),
+            self.date.leadingAnchor.constraint(equalTo: self.title.trailingAnchor),
         ])
     }
 }

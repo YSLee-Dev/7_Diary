@@ -45,7 +45,7 @@ class ViewController: UIViewController {
         self.view.addSubview(self.collectionView)
         self.collectionView.register(CollectionViewCell.self, forCellWithReuseIdentifier: cellId)
         self.navigationItem.title = "일기장"
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "일기추가", style: .done, target: self, action: #selector(addBtnClick))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "일기작성", style: .done, target: self, action: #selector(addBtnClick))
         
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
