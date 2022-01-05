@@ -72,22 +72,20 @@ class PopupViewController : UIViewController{
         self.view.addSubview(self.popupView)
         NSLayoutConstraint.activate([
             self.popupView.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-            self.popupView.heightAnchor.constraint(equalToConstant: 350),
-            self.popupView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor)
-        ])
-        
-        self.view.addSubview(self.datePicker)
-        NSLayoutConstraint.activate([
-            self.datePicker.centerXAnchor.constraint(equalTo: self.popupView.centerXAnchor),
-            self.datePicker.centerYAnchor.constraint(equalTo: self.popupView.centerYAnchor),
-            self.datePicker.heightAnchor.constraint(equalTo: self.popupView.heightAnchor, multiplier: 0.65),
-            self.datePicker.widthAnchor.constraint(equalTo: self.popupView.widthAnchor, multiplier: 0.9)
+            self.popupView.heightAnchor.constraint(equalToConstant: 400),
+            self.popupView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: 15)
         ])
         
         self.view.addSubview(self.popupTitle)
         NSLayoutConstraint.activate([
-            self.popupTitle.bottomAnchor.constraint(equalTo: self.datePicker.topAnchor, constant: -10),
+            self.popupTitle.topAnchor.constraint(equalTo: self.popupView.topAnchor, constant: 20),
             self.popupTitle.centerXAnchor.constraint(equalTo: self.popupView.centerXAnchor)
+        ])
+        
+        self.view.addSubview(self.closeBtn)
+        NSLayoutConstraint.activate([
+            self.closeBtn.centerYAnchor.constraint(equalTo: self.popupTitle.centerYAnchor),
+            self.closeBtn.trailingAnchor.constraint(equalTo: self.popupView.trailingAnchor, constant: -15)
         ])
         
         self.view.addSubview(self.closeBtn)
@@ -98,11 +96,22 @@ class PopupViewController : UIViewController{
         
         self.view.addSubview(self.okBtn)
         NSLayoutConstraint.activate([
-            self.okBtn.centerXAnchor.constraint(equalTo: self.popupView.centerXAnchor),
-            self.okBtn.topAnchor.constraint(equalTo: self.datePicker.bottomAnchor, constant: 5),
-            self.okBtn.widthAnchor.constraint(equalTo: self.datePicker.widthAnchor),
-            self.okBtn.heightAnchor.constraint(equalToConstant: 50)
+            self.okBtn.leadingAnchor.constraint(equalTo: self.popupView.leadingAnchor, constant: 15),
+            self.okBtn.trailingAnchor.constraint(equalTo: self.popupView.trailingAnchor, constant: -15),
+            self.okBtn.heightAnchor.constraint(equalToConstant: 50),
+            self.okBtn.bottomAnchor.constraint(equalTo: self.popupView.bottomAnchor, constant: -45)
         ])
+        
+        self.view.addSubview(self.datePicker)
+        NSLayoutConstraint.activate([
+            self.datePicker.leadingAnchor.constraint(equalTo: self.popupView.leadingAnchor, constant: 15),
+            self.datePicker.trailingAnchor.constraint(equalTo: self.popupView.trailingAnchor, constant: -15),
+            self.datePicker.topAnchor.constraint(equalTo: self.popupTitle.bottomAnchor, constant: 15),
+            self.datePicker.bottomAnchor.constraint(equalTo: self.okBtn.topAnchor, constant: -15)
+            
+        ])
+        
+        
         
     }
     
