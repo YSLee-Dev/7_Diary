@@ -7,120 +7,160 @@
 
 import UIKit
 
-class DetailViewController: UIViewController {
+protocol DetailViewDelegate : AnyObject{
+    func dataDelete(PIndexPath : IndexPath)
+}
 
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
+class DetailViewController: UIViewController {
     
     var titleBG : UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(hue: 0.6083, saturation: 0.72, brightness: 0.35, alpha: 1.0)
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.cornerRadius = 15
         return view
-    }()
-    
-    var backBtn : UIButton = {
-        let btn = UIButton()
-        btn.setTitle("< 일기장으로", for: .normal)
-        btn.setTitleColor(.white, for: .normal)
-        btn.translatesAutoresizingMaskIntoConstraints = false
-        return btn
     }()
     
     var titleTF: UITextField = {
         let tf = UITextField()
         tf.borderStyle = .none
+        tf.attributedPlaceholder = NSAttributedString(string: "제목을 입력하세요.",attributes: [NSAttributedString.Key.foregroundColor :  UIColor(hue: 0, saturation: 0, brightness: 0.83, alpha: 1.0)])
+        tf.textColor = .white
+        tf.layer.cornerRadius = 15
+        tf.autocapitalizationType = .none
+        tf.autocorrectionType = .no
+        tf.spellCheckingType = .no
+        tf.smartQuotesType = .no
+        tf.smartDashesType = .no
+        tf.smartInsertDeleteType = .no
+        tf.isEnabled = false
         tf.translatesAutoresizingMaskIntoConstraints = false
         return tf
     }()
     
-    var dateBG : UIView = {
+    var contentsBG : UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(hue: 0.6, saturation: 0.63, brightness: 0.51, alpha: 1.0)
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.cornerRadius = 15
+        view.backgroundColor = UIColor(hue: 0.0778, saturation: 0, brightness: 0.95, alpha: 1.0)
         return view
-    }()
-    
-    var dataTF : UITextField =  {
-        let tf = UITextField()
-        tf.borderStyle = .none
-        tf.translatesAutoresizingMaskIntoConstraints = false
-        return tf
-    }()
-    
-    var explanation : UIButton = {
-        let btn = UIButton()
-        btn.setTitle("삭제", for: .normal)
-        btn.setTitleColor(UIColor(hue: 0, saturation: 0, brightness: 0.83, alpha: 1.0), for: .normal)
-        btn.translatesAutoresizingMaskIntoConstraints = false
-        return btn
     }()
     
     var contentsTV : UITextView = {
         let tv = UITextView()
-        tv.backgroundColor = UIColor(hue: 0.0778, saturation: 0, brightness: 0.95, alpha: 1.0)
         tv.translatesAutoresizingMaskIntoConstraints = false
+        tv.layer.cornerRadius = 15
+        tv.autocapitalizationType = .none
+        tv.autocorrectionType = .no
+        tv.spellCheckingType = .no
+        tv.smartQuotesType = .no
+        tv.smartDashesType = .no
+        tv.smartInsertDeleteType = .no
+        tv.isEditable = false
+        tv.backgroundColor = UIColor(hue: 0.0778, saturation: 0, brightness: 0.95, alpha: 1.0)
         return tv
     }()
-
+    
+    var addScrollView : UIScrollView = {
+        let sv = UIScrollView()
+        sv.translatesAutoresizingMaskIntoConstraints = false
+        sv.alwaysBounceVertical = true
+        return sv
+    }()
+    
+    var addStackView : UIStackView = {
+        let st = UIStackView()
+        st.axis = .vertical
+        st.alignment = .fill
+        st.distribution = .fill
+        st.spacing = 15
+        st.translatesAutoresizingMaskIntoConstraints = false
+        return st
+    }()
+    
+    var toolBar : UIToolbar = {
+        let tb = UIToolbar(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+        let ti = UIBarButtonItem(title: "닫기", style: .done, target: self, action: nil)
+        tb.sizeToFit()
+        tb.setItems([ti], animated: true)
+        return tb
+    }()
+    
+    var detailIndexPath : IndexPath?
+    var diary : Diary?
+    weak var delegate : DetailViewDelegate?
+    
     override func viewDidLoad() {
-        super.viewDidLoad()
-        
+        viewSetup()
+    }
+    
+    private func viewSetup(){
         self.view.backgroundColor = .white
         
-        self.view.addSubview(self.titleBG)
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "삭제", style: .plain, target: self, action: #selector(deleteBtnClick(_:)))
+        
+        self.titleTF.text = self.diary?.title
+        self.contentsTV.text = self.diary?.contents
+        self.title = ("\(dateToString(date: self.diary!.date))에 작성됨")
+        
+        let margin = (self.navigationController?.systemMinimumLayoutMargins.leading)! * 2
+        
+        self.view.addSubview(self.addScrollView)
         NSLayoutConstraint.activate([
-            self.titleBG.topAnchor.constraint(equalTo: self.view.topAnchor),
-            self.titleBG.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 100),
-            self.titleBG.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
-            self.titleBG.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor)
+            self.addScrollView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            self.addScrollView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            self.addScrollView.widthAnchor.constraint(equalTo: self.view.widthAnchor),
+            self.addScrollView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor)
+        ])
+        
+        self.addScrollView.addSubview(self.addStackView)
+        NSLayoutConstraint.activate([
+            self.addStackView.widthAnchor.constraint(equalTo: self.addScrollView.widthAnchor, constant: -margin),
+            self.addStackView.topAnchor.constraint(equalTo: self.addScrollView.topAnchor),
+            self.addStackView.centerXAnchor.constraint(equalTo: self.addScrollView.centerXAnchor),
+            self.addStackView.bottomAnchor.constraint(equalTo: self.addScrollView.bottomAnchor)
+        ])
+        
+        self.addStackView.addArrangedSubview(self.titleBG)
+        NSLayoutConstraint.activate([
+            self.titleBG.heightAnchor.constraint(equalToConstant: 50)
         ])
         
         self.titleBG.addSubview(self.titleTF)
+        self.titleTF.inputAccessoryView = self.toolBar
         NSLayoutConstraint.activate([
-            self.titleTF.bottomAnchor.constraint(equalTo: self.titleBG.bottomAnchor, constant: -10),
-            self.titleTF.heightAnchor.constraint(equalTo: self.titleBG.heightAnchor, multiplier: 0.3),
+            self.titleTF.bottomAnchor.constraint(equalTo: self.titleBG.bottomAnchor),
+            self.titleTF.heightAnchor.constraint(equalTo: self.titleBG.heightAnchor),
             self.titleTF.leadingAnchor.constraint(equalTo: self.titleBG.leadingAnchor, constant: 10),
-            self.titleTF.trailingAnchor.constraint(equalTo: self.titleBG.trailingAnchor, constant: -10)
+            self.titleTF.trailingAnchor.constraint(equalTo: self.titleBG.trailingAnchor, constant: -10),
         ])
         
-        self.titleBG.addSubview(self.backBtn)
+        self.addStackView.addArrangedSubview(self.contentsBG)
         NSLayoutConstraint.activate([
-            self.backBtn.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 5),
-            self.backBtn.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
+            self.contentsBG.heightAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.heightAnchor, multiplier: 0.8)
         ])
         
-        self.view.addSubview(self.dateBG)
+        self.contentsBG.addSubview(self.contentsTV)
+        self.contentsTV.inputAccessoryView = self.toolBar
         NSLayoutConstraint.activate([
-            self.dateBG.topAnchor.constraint(equalTo: self.titleBG.bottomAnchor),
-            self.dateBG.heightAnchor.constraint(equalTo: self.titleTF.heightAnchor, constant: 15),
-            self.dateBG.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
-            self.dateBG.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor)
+            self.contentsTV.bottomAnchor.constraint(equalTo: self.contentsBG.bottomAnchor),
+            self.contentsTV.topAnchor.constraint(equalTo: self.contentsBG.topAnchor),
+            self.contentsTV.leadingAnchor.constraint(equalTo: self.contentsBG.leadingAnchor, constant: 5),
+            self.contentsTV.trailingAnchor.constraint(equalTo: self.contentsBG.trailingAnchor, constant: -5),
         ])
+    }
+    
+    func dateToString(date : Date) -> String{
+        let Formatter = DateFormatter()
+        Formatter.dateFormat = "YY.MM.dd(EEEEE)"
+        Formatter.locale = Locale(identifier: "ko-KR")
         
-        self.dateBG.addSubview(self.dataTF)
-        NSLayoutConstraint.activate([
-            self.dataTF.heightAnchor.constraint(equalTo: self.dateBG.heightAnchor),
-            self.dataTF.centerYAnchor.constraint(equalTo: self.dataTF.centerYAnchor),
-            self.dataTF.leadingAnchor.constraint(equalTo: self.titleBG.leadingAnchor, constant: 10),
-            self.dataTF.trailingAnchor.constraint(equalTo: self.titleBG.trailingAnchor, constant: -10)
-        ])
-        
-        self.view.addSubview(self.contentsTV)
-        NSLayoutConstraint.activate([
-            self.contentsTV.topAnchor.constraint(equalTo: self.dateBG.bottomAnchor),
-            self.contentsTV.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
-            self.contentsTV.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor),
-            self.contentsTV.bottomAnchor.constraint(equalTo: self.view.centerYAnchor, constant: -10)
-        ])
-        
-        self.view.addSubview(self.explanation)
-        NSLayoutConstraint.activate([
-            self.explanation.topAnchor.constraint(equalTo: self.contentsTV.bottomAnchor, constant: 10),
-            self.explanation.leadingAnchor.constraint(equalTo: self.titleBG.leadingAnchor, constant: 10),
-            self.explanation.trailingAnchor.constraint(equalTo: self.titleBG.trailingAnchor, constant: -10)
-        ])
-        
+        return Formatter.string(from: date)
+    }
+    
+    @objc func deleteBtnClick(_ sender:Any){
+        guard let index = self.detailIndexPath else {return}
+        self.delegate?.dataDelete(PIndexPath: index)
+        self.navigationController?.popViewController(animated: true)
     }
 }

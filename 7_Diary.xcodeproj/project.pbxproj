@@ -27,7 +27,7 @@
 		D477A65D2764831400C0E408 /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		D477A65F27648EAB00C0E408 /* SubCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubCollectionViewCell.swift; sourceTree = "<group>"; };
 		D477A6612764916700C0E408 /* AddViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddViewController.swift; sourceTree = "<group>"; };
-		D48252D52783DB3A0059A04A /* PopupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PopupViewController.swift; path = 7_Diary/PopupViewController.swift; sourceTree = "<group>"; };
+		D48252D52783DB3A0059A04A /* PopupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupViewController.swift; sourceTree = "<group>"; };
 		D49EEFCA275F619200B23AE0 /* 7_Diary.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 7_Diary.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D49EEFCD275F619300B23AE0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D49EEFCF275F619300B23AE0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -54,7 +54,6 @@
 		D49EEFC1275F619200B23AE0 = {
 			isa = PBXGroup;
 			children = (
-				D48252D52783DB3A0059A04A /* PopupViewController.swift */,
 				D49EEFCC275F619200B23AE0 /* 7_Diary */,
 				D49EEFCB275F619200B23AE0 /* Products */,
 			);
@@ -72,6 +71,7 @@
 			isa = PBXGroup;
 			children = (
 				D49EEFCD275F619300B23AE0 /* AppDelegate.swift */,
+				D48252D52783DB3A0059A04A /* PopupViewController.swift */,
 				D49EEFCF275F619300B23AE0 /* SceneDelegate.swift */,
 				D49EEFD1275F619300B23AE0 /* ViewController.swift */,
 				D477A6612764916700C0E408 /* AddViewController.swift */,

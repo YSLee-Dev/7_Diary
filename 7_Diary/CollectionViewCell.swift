@@ -34,6 +34,7 @@ class CollectionViewCell: UICollectionViewCell {
         date.font = UIFont.systemFont(ofSize: 13)
         date.textAlignment = .right
         date.numberOfLines = 1
+        date.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         return date
     }()
     

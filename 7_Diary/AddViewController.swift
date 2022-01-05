@@ -26,18 +26,15 @@ class AddViewController: UIViewController {
         tf.borderStyle = .none
         tf.attributedPlaceholder = NSAttributedString(string: "제목을 입력하세요.",attributes: [NSAttributedString.Key.foregroundColor :  UIColor(hue: 0, saturation: 0, brightness: 0.83, alpha: 1.0)])
         tf.textColor = .white
+        tf.layer.cornerRadius = 15
+        tf.autocapitalizationType = .none
+        tf.autocorrectionType = .no
+        tf.spellCheckingType = .no
+        tf.smartQuotesType = .no
+        tf.smartDashesType = .no
+        tf.smartInsertDeleteType = .no
         tf.translatesAutoresizingMaskIntoConstraints = false
         return tf
-    }()
-    
-    var okBtn : UIButton = {
-        let btn = UIButton()
-        btn.setTitle("확인", for: .normal)
-        btn.setTitleColor(UIColor(hue: 0, saturation: 0, brightness: 0.83, alpha: 1.0), for: .disabled)
-        btn.setTitleColor(.black, for: .normal)
-        btn.addTarget(self, action: #selector(saveBtnClick(_:)), for: .touchUpInside)
-        btn.translatesAutoresizingMaskIntoConstraints = false
-        return btn
     }()
     
     var contentsBG : UIView = {
@@ -52,6 +49,12 @@ class AddViewController: UIViewController {
         let tv = UITextView()
         tv.translatesAutoresizingMaskIntoConstraints = false
         tv.layer.cornerRadius = 15
+        tv.autocapitalizationType = .none
+        tv.autocorrectionType = .no
+        tv.spellCheckingType = .no
+        tv.smartQuotesType = .no
+        tv.smartDashesType = .no
+        tv.smartInsertDeleteType = .no
         tv.backgroundColor = UIColor(hue: 0.0778, saturation: 0, brightness: 0.95, alpha: 1.0)
         return tv
     }()
@@ -89,22 +92,34 @@ class AddViewController: UIViewController {
         return view
     }()
     
+    var blankView : UIView = {
+        let view = UIView()
+        view.backgroundColor = .clear
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     
     weak var delegate:AddDiaryDelegate?
+    var keyHeight : CGFloat?
 
     override func viewDidLoad() {
-        super.viewDidLoad()
-        self.view.backgroundColor = .white
-        self.title = "일기작성"
         
         viewSetup()
         inputCheck()
         
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
     }
     
     private func viewSetup(){
+        self.view.backgroundColor = .white
+        self.title = "일기작성"
         
         let margin = (self.navigationController?.systemMinimumLayoutMargins.leading)! * 2
+        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "확인", style: .done, target: self, action: #selector(saveBtnClick(_:)))
         
         self.view.addSubview(self.addScrollView)
         NSLayoutConstraint.activate([
@@ -138,22 +153,19 @@ class AddViewController: UIViewController {
         
         self.addStackView.addArrangedSubview(self.contentsBG)
         NSLayoutConstraint.activate([
-            self.contentsBG.heightAnchor.constraint(equalToConstant: 125)
+            self.contentsBG.heightAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.heightAnchor, multiplier: 0.8)
         ])
         
         self.contentsBG.addSubview(self.contentsTV)
         self.contentsTV.inputAccessoryView = self.toolBar
         NSLayoutConstraint.activate([
             self.contentsTV.bottomAnchor.constraint(equalTo: self.contentsBG.bottomAnchor),
-            self.contentsTV.heightAnchor.constraint(equalTo: self.contentsBG.heightAnchor),
+            self.contentsTV.topAnchor.constraint(equalTo: self.contentsBG.topAnchor),
             self.contentsTV.leadingAnchor.constraint(equalTo: self.contentsBG.leadingAnchor, constant: 5),
             self.contentsTV.trailingAnchor.constraint(equalTo: self.contentsBG.trailingAnchor, constant: -5),
         ])
         
-        self.okBtn.isEnabled = false
-        self.addStackView.addArrangedSubview(self.okBtn)
-        NSLayoutConstraint.activate([
-        ])
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
     }
     
     
@@ -170,7 +182,7 @@ class AddViewController: UIViewController {
     
     // 텍스트 입력 여부 확인
     private func inputFieldCheck(){
-        self.okBtn.isEnabled = !(self.titleTF.text?.isEmpty ?? true) && !self.contentsTV.text.isEmpty
+        self.navigationItem.rightBarButtonItem?.isEnabled = !(self.titleTF.text?.isEmpty ?? true) && !self.contentsTV.text.isEmpty
     }
     
     // 저장버튼 클릭
@@ -193,9 +205,30 @@ class AddViewController: UIViewController {
         ])
     }
     
+    func blankViewShow(heigth:CGFloat){
+        self.addStackView.addArrangedSubview(self.blankView)
+        NSLayoutConstraint.activate([
+            self.blankView.heightAnchor.constraint(equalToConstant: heigth)
+        ])
+    }
+    
     // 키보드 내리기
     @objc func closeKey(_ sender:Any){
         self.view.endEditing(true)
+    }
+    
+    @objc func keyboardShow(_ sender: Notification) {
+        let userInfo:NSDictionary = sender.userInfo! as NSDictionary
+        let keyboardFrame:NSValue = userInfo.value(forKey: UIResponder.keyboardFrameEndUserInfoKey) as! NSValue
+        let keyboardRectangle = keyboardFrame.cgRectValue
+        let keyboardHeight = keyboardRectangle.height
+        self.keyHeight = keyboardHeight
+
+        blankViewShow(heigth: self.keyHeight!)
+    }
+    
+    @objc func keyboardHide(_ sender: Notification) {
+        self.addStackView.removeArrangedSubview(self.blankView)
     }
     
 }

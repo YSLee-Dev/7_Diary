@@ -134,7 +134,13 @@ extension ViewController: UICollectionViewDataSource{
     
 }
 extension ViewController : UICollectionViewDelegate{
-    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let dv = DetailViewController()
+        dv.detailIndexPath = indexPath
+        dv.diary = self.diaryList[indexPath.row]
+        dv.delegate = self
+        self.navigationController?.pushViewController(dv, animated: true)
+    }
 }
 
 // 컬렉션 뷰의 셀 위치? 관리
@@ -143,5 +149,12 @@ extension ViewController:UICollectionViewDelegateFlowLayout{
     // 셀의 사이즈 결
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: UIScreen.main.bounds.width - ((self.navigationController?.systemMinimumLayoutMargins.leading)! * 2), height: 50)
+    }
+}
+
+extension ViewController : DetailViewDelegate{
+    func dataDelete(PIndexPath: IndexPath) {
+        self.diaryList.remove(at: PIndexPath.row)
+        self.collectionView.deleteItems(at: [PIndexPath])
     }
 }
