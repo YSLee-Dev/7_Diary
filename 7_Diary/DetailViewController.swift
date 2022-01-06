@@ -86,6 +86,18 @@ class DetailViewController: UIViewController {
         return tb
     }()
     
+    var bgView : UIView = {
+        let view = UIView()
+        view.backgroundColor = .black
+        view.alpha = 0.3
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    var editBtn : UIBarButtonItem?
+    var deleteBtn : UIBarButtonItem?
+    var editOkBtn : UIBarButtonItem?
+    
     var detailIndexPath : IndexPath?
     var diary : Diary?
     weak var delegate : DetailViewDelegate?
@@ -97,11 +109,16 @@ class DetailViewController: UIViewController {
     private func viewSetup(){
         self.view.backgroundColor = .white
         
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "삭제", style: .plain, target: self, action: #selector(deleteBtnClick(_:)))
+        self.editBtn = UIBarButtonItem(title: "수정", style: .plain, target: self, action: #selector(editBtnClick(_:)))
+        self.deleteBtn = UIBarButtonItem(title: "삭제", style: .plain, target: self, action: #selector(deleteBtnClick(_:)))
+        self.editOkBtn = UIBarButtonItem(title: "수정완료", style: .plain, target: self, action: #selector(editOkBtnClick(_:)))
+        
+        self.navigationItem.setRightBarButtonItems([self.editBtn!,self.deleteBtn!], animated: true)
+        self.navigationItem.rightBarButtonItems![1].tintColor = .red
         
         self.titleTF.text = self.diary?.title
         self.contentsTV.text = self.diary?.contents
-        self.title = ("\(dateToString(date: self.diary!.date))에 작성됨")
+        self.title = dateToString(date: self.diary!.date)
         
         let margin = (self.navigationController?.systemMinimumLayoutMargins.leading)! * 2
         
@@ -152,15 +169,61 @@ class DetailViewController: UIViewController {
     
     func dateToString(date : Date) -> String{
         let Formatter = DateFormatter()
-        Formatter.dateFormat = "YY.MM.dd(EEEEE)"
+        Formatter.dateFormat = "YY.MM.dd | EEE"
         Formatter.locale = Locale(identifier: "ko-KR")
         
         return Formatter.string(from: date)
+    }
+    
+    private func bgViewUp(){
+        self.view.addSubview(self.bgView)
+        NSLayoutConstraint.activate([
+            self.bgView.widthAnchor.constraint(equalTo: self.view.widthAnchor),
+            self.bgView.heightAnchor.constraint(equalTo: self.view.heightAnchor),
+            self.bgView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            self.bgView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor)
+        ])
     }
     
     @objc func deleteBtnClick(_ sender:Any){
         guard let index = self.detailIndexPath else {return}
         self.delegate?.dataDelete(PIndexPath: index)
         self.navigationController?.popViewController(animated: true)
+    }
+    
+    @objc func editBtnClick(_ sender:Any){
+        self.navigationItem.title = "일기수정"
+        self.titleTF.isEnabled = true
+        self.contentsTV.isEditable = true
+        self.navigationItem.rightBarButtonItems![1].isEnabled = false
+        self.navigationItem.rightBarButtonItems![1].tintColor = .clear
+        self.navigationItem.rightBarButtonItems![0] = self.editOkBtn!
+    }
+    
+    @objc func editOkBtnClick(_ sender:Any){
+        bgViewUp()
+        self.view.endEditing(true)
+        let popup = PopupViewController()
+        popup.modalPresentationStyle = .overFullScreen
+        popup.delegate = self
+        self.present(popup, animated: true)
+    }
+}
+
+extension DetailViewController : Datasend{
+    func data(date: Date) {
+        self.bgView.removeFromSuperview()
+        self.navigationItem.title = dateToString(date: date)
+        
+        self.navigationItem.rightBarButtonItems![1].isEnabled = true
+        self.navigationItem.rightBarButtonItems![1].tintColor = .red
+        self.navigationItem.rightBarButtonItems![0] = self.editBtn!
+        
+        self.titleTF.isEnabled = false
+        self.contentsTV.isEditable = false
+    }
+    
+    func close() {
+        self.bgView.removeFromSuperview()
     }
 }

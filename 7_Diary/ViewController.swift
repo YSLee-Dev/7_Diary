@@ -61,7 +61,7 @@ class ViewController: UIViewController {
     private func datetoString(date:Date)->String{
         let formmater = DateFormatter()
         formmater.locale = Locale(identifier: "ko-KR")
-        formmater.dateFormat = "yyyy.MM.dd(EEEEE)"
+        formmater.dateFormat = "yy.MM.dd | EEEEE"
         
         return formmater.string(from: date)
     }
