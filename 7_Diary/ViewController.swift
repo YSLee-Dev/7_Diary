@@ -106,6 +106,11 @@ class ViewController: UIViewController {
 
 // 다이어리 추가
 extension ViewController : AddDiaryDelegate{
+    func deleteDiary(PIndexPath: IndexPath) {
+        self.diaryList.remove(at: PIndexPath.row)
+        self.collectionView.deleteItems(at: [PIndexPath])
+    }
+    
     func valueRegister(diary: Diary) {
         self.diaryList.append(diary)
         self.diaryList = diaryList.sorted(by: {
@@ -113,6 +118,7 @@ extension ViewController : AddDiaryDelegate{
         })
         self.collectionView.reloadData()
     }
+    
 }
 
 // 컬렉션 뷰의 데이터 관리
@@ -135,11 +141,10 @@ extension ViewController: UICollectionViewDataSource{
 }
 extension ViewController : UICollectionViewDelegate{
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let dv = DetailViewController()
-        dv.detailIndexPath = indexPath
-        dv.diary = self.diaryList[indexPath.row]
-        dv.delegate = self
-        self.navigationController?.pushViewController(dv, animated: true)
+        let AddV = AddViewController()
+        AddV.viewMode = .edit(indexPath, self.diaryList[indexPath.row])
+        AddV.delegate = self
+        self.navigationController?.pushViewController(AddV, animated: true)
     }
 }
 
@@ -149,12 +154,5 @@ extension ViewController:UICollectionViewDelegateFlowLayout{
     // 셀의 사이즈 결
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: UIScreen.main.bounds.width - ((self.navigationController?.systemMinimumLayoutMargins.leading)! * 2), height: 50)
-    }
-}
-
-extension ViewController : DetailViewDelegate{
-    func dataDelete(PIndexPath: IndexPath) {
-        self.diaryList.remove(at: PIndexPath.row)
-        self.collectionView.deleteItems(at: [PIndexPath])
     }
 }

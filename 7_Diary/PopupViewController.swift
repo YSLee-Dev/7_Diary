@@ -10,6 +10,7 @@ import UIKit
 protocol Datasend : AnyObject {
     func data(date:Date)
     func close()
+    func edit(date:Date)
 }
 
 class PopupViewController : UIViewController{
@@ -60,6 +61,7 @@ class PopupViewController : UIViewController{
     }()
     
     weak var delegate : Datasend?
+    var viewMode:Mode = .add
     var date = Date()
     
     override func viewDidLoad() {
@@ -111,14 +113,21 @@ class PopupViewController : UIViewController{
             
         ])
         
-        
-        
     }
     
     
-    
     @objc func saveClick(_ sender:Any){
-        self.delegate?.data(date: self.date)
+        
+        switch self.viewMode {
+        case .edit(_, _):
+            self.delegate?.edit(date: self.date)
+            break
+        default:
+            self.delegate?.data(date: self.date)
+            break
+            
+        }
+        
         self.dismiss(animated: true)
     }
     

@@ -9,6 +9,12 @@ import UIKit
 
 protocol AddDiaryDelegate:AnyObject {
     func valueRegister(diary:Diary)
+    func deleteDiary(PIndexPath : IndexPath)
+}
+
+enum Mode{
+    case add
+    case edit(IndexPath, Diary)
 }
 
 class AddViewController: UIViewController {
@@ -101,7 +107,14 @@ class AddViewController: UIViewController {
     
     
     weak var delegate:AddDiaryDelegate?
+    var viewMode:Mode = .add
     var keyHeight : CGFloat?
+    
+    var editBtn : UIBarButtonItem?
+    var deleteBtn : UIBarButtonItem?
+    var editOkBtn : UIBarButtonItem?
+    var detailIndexPath:IndexPath?
+    
 
     override func viewDidLoad() {
         
@@ -113,13 +126,46 @@ class AddViewController: UIViewController {
         
     }
     
-    private func viewSetup(){
+    private func loadEdit(Diary : Diary){
+        self.view.backgroundColor = .white
+        
+        self.titleTF.text = Diary.title
+        self.contentsTV.text = Diary.contents
+        self.title = dateToString(date: Diary.date)
+        
+        self.titleTF.isEnabled = false
+        self.contentsTV.isEditable = false
+        
+        self.editBtn = UIBarButtonItem(title: "수정", style: .plain, target: self, action: #selector(editBtnClick(_:)))
+        self.deleteBtn = UIBarButtonItem(title: "삭제", style: .plain, target: self, action: #selector(deleteBtnClick(_:)))
+        self.editOkBtn = UIBarButtonItem(title: "수정완료", style: .plain, target: self, action: #selector(saveBtnClick(_:)))
+        
+        self.navigationItem.setRightBarButtonItems([self.editBtn!,self.deleteBtn!], animated: true)
+        self.navigationItem.rightBarButtonItems![1].tintColor = .red
+    }
+    
+    private func loadAdd(){
         self.view.backgroundColor = .white
         self.title = "일기작성"
         
-        let margin = (self.navigationController?.systemMinimumLayoutMargins.leading)! * 2
-        
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "확인", style: .done, target: self, action: #selector(saveBtnClick(_:)))
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
+    }
+    
+    private func viewSetup(){
+        
+        switch self.viewMode {
+        case let .edit(index, Diary):
+            self.detailIndexPath = index
+            loadEdit(Diary: Diary)
+            break
+        default:
+            loadAdd()
+            break
+            
+        }
+        
+        let margin = (self.navigationController?.systemMinimumLayoutMargins.leading)! * 2
         
         self.view.addSubview(self.addScrollView)
         NSLayoutConstraint.activate([
@@ -164,8 +210,6 @@ class AddViewController: UIViewController {
             self.contentsTV.leadingAnchor.constraint(equalTo: self.contentsBG.leadingAnchor, constant: 5),
             self.contentsTV.trailingAnchor.constraint(equalTo: self.contentsBG.trailingAnchor, constant: -5),
         ])
-        
-        self.navigationItem.rightBarButtonItem?.isEnabled = false
     }
     
     
@@ -192,6 +236,7 @@ class AddViewController: UIViewController {
         let popup = PopupViewController()
         popup.modalPresentationStyle = .overFullScreen
         popup.delegate = self
+        popup.viewMode = self.viewMode
         self.present(popup, animated: true)
     }
     
@@ -210,6 +255,31 @@ class AddViewController: UIViewController {
         NSLayoutConstraint.activate([
             self.blankView.heightAnchor.constraint(equalToConstant: heigth)
         ])
+    }
+    
+    // 삭제버튼 클릭 시
+    @objc func deleteBtnClick(_ sender:Any){
+        guard let index = self.detailIndexPath else {return}
+        self.delegate?.deleteDiary(PIndexPath: index)
+        self.navigationController?.popViewController(animated: true)
+    }
+    
+    // 수정버튼 클릭 시
+    @objc func editBtnClick(_ sender:Any){
+        self.titleTF.isEnabled = true
+        self.contentsTV.isEditable = true
+        
+        self.navigationItem.rightBarButtonItems![0] = self.editOkBtn!
+        self.navigationItem.rightBarButtonItems![1].isEnabled = false
+    }
+    
+    // 날짜 데이터 변환
+    func dateToString(date : Date) -> String{
+        let Formatter = DateFormatter()
+        Formatter.dateFormat = "YY.MM.dd | EEE"
+        Formatter.locale = Locale(identifier: "ko-KR")
+        
+        return Formatter.string(from: date)
     }
     
     // 키보드 내리기
@@ -254,5 +324,18 @@ extension AddViewController : Datasend{
     
     func close() {
         self.bgView.removeFromSuperview()
+    }
+    
+    func edit(date: Date) {
+        
+        self.bgView.removeFromSuperview()
+        
+        self.navigationItem.title = dateToString(date: date)
+        
+        self.titleTF.isEnabled = true
+        self.contentsTV.isEditable = true
+        
+        self.navigationItem.rightBarButtonItems![0] = self.editBtn!
+        self.navigationItem.rightBarButtonItems![1].isEnabled = true
     }
 }
