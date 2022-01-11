@@ -67,23 +67,6 @@ class AddViewController: UIViewController {
         return tv
     }()
     
-    var addScrollView : UIScrollView = {
-        let sv = UIScrollView()
-        sv.translatesAutoresizingMaskIntoConstraints = false
-        sv.alwaysBounceVertical = true
-        return sv
-    }()
-    
-    var addStackView : UIStackView = {
-        let st = UIStackView()
-        st.axis = .vertical
-        st.alignment = .fill
-        st.distribution = .fill
-        st.spacing = 15
-        st.translatesAutoresizingMaskIntoConstraints = false
-        return st
-    }()
-    
     var toolBar : UIToolbar = {
         let tb = UIToolbar(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
         let ti = UIBarButtonItem(title: "닫기", style: .done, target: self, action: #selector(closeKey(_:)))
@@ -95,7 +78,7 @@ class AddViewController: UIViewController {
     var bgView : UIView = {
         let view = UIView()
         view.backgroundColor = .black
-        view.alpha = 0.3
+        view.alpha = 0
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -169,27 +152,14 @@ class AddViewController: UIViewController {
             
         }
         
-        let margin = (self.navigationController?.systemMinimumLayoutMargins.leading)! * 2
+        let margin = (self.navigationController?.systemMinimumLayoutMargins.leading)
         
-        self.view.addSubview(self.addScrollView)
+        self.view.addSubview(self.titleBG)
         NSLayoutConstraint.activate([
-            self.addScrollView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 10),
-            self.addScrollView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            self.addScrollView.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-            self.addScrollView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor)
-        ])
-        
-        self.addScrollView.addSubview(self.addStackView)
-        NSLayoutConstraint.activate([
-            self.addStackView.widthAnchor.constraint(equalTo: self.addScrollView.widthAnchor, constant: -margin),
-            self.addStackView.topAnchor.constraint(equalTo: self.addScrollView.topAnchor),
-            self.addStackView.centerXAnchor.constraint(equalTo: self.addScrollView.centerXAnchor),
-            self.addStackView.bottomAnchor.constraint(equalTo: self.addScrollView.bottomAnchor)
-        ])
-        
-        self.addStackView.addArrangedSubview(self.titleBG)
-        NSLayoutConstraint.activate([
-            self.titleBG.heightAnchor.constraint(equalToConstant: 50)
+            self.titleBG.heightAnchor.constraint(equalToConstant: 50),
+            self.titleBG.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            self.titleBG.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: margin!),
+            self.titleBG.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -margin!),
         ])
         
         self.titleBG.addSubview(self.titleTF)
@@ -201,9 +171,12 @@ class AddViewController: UIViewController {
             self.titleTF.trailingAnchor.constraint(equalTo: self.titleBG.trailingAnchor, constant: -10),
         ])
         
-        self.addStackView.addArrangedSubview(self.contentsBG)
+        self.view.addSubview(self.contentsBG)
         NSLayoutConstraint.activate([
-            self.contentsBG.heightAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.heightAnchor, multiplier: 0.8)
+            self.contentsBG.topAnchor.constraint(equalTo: self.titleBG.bottomAnchor, constant: 10),
+            self.contentsBG.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
+            self.contentsBG.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: margin!),
+            self.contentsBG.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -margin!),
         ])
         
         self.contentsBG.addSubview(self.contentsTV)
@@ -255,14 +228,12 @@ class AddViewController: UIViewController {
             self.bgView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
             self.bgView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor)
         ])
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.bgView.alpha = 0.3
+        }
     }
     
-    func blankViewShow(heigth:CGFloat){
-        self.addStackView.addArrangedSubview(self.blankView)
-        NSLayoutConstraint.activate([
-            self.blankView.heightAnchor.constraint(equalToConstant: heigth)
-        ])
-    }
     
     // 삭제버튼 클릭 시
     @objc func deleteBtnClick(_ sender:Any){
@@ -301,11 +272,11 @@ class AddViewController: UIViewController {
         let keyboardHeight = keyboardRectangle.height
         self.keyHeight = keyboardHeight
 
-        blankViewShow(heigth: self.keyHeight!)
+       
     }
     
     @objc func keyboardHide(_ sender: Notification) {
-        self.addStackView.removeArrangedSubview(self.blankView)
+        
     }
     
 }
