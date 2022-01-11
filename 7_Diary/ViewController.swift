@@ -35,11 +35,9 @@ class ViewController: UIViewController {
         viewSet()
         loadData()
         
+        NotificationCenter.default.addObserver(self, selector: #selector(NCEdit(_:)), name: NSNotification.Name("edit"), object: nil)
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-       
-    }
     
     private func viewSet(){
         self.view.addSubview(self.collectionView)
@@ -102,6 +100,18 @@ class ViewController: UIViewController {
         addC.delegate = self
         self.navigationController?.pushViewController(addC, animated: true)
     }
+    
+    // 노티피케이션 받기
+    @objc private func NCEdit(_ NC:Notification){
+        guard let ncDiary = NC.object as? Diary else {return}
+        guard let row = NC.userInfo!["row"] as? Int else {return}
+        
+        self.diaryList[row] = ncDiary
+        self.diaryList = diaryList.sorted{
+            $0.date.compare($1.date) == .orderedDescending
+        }
+        self.collectionView.reloadData()
+    }
 }
 
 // 다이어리 추가
@@ -144,6 +154,7 @@ extension ViewController : UICollectionViewDelegate{
         let AddV = AddViewController()
         AddV.viewMode = .edit(indexPath, self.diaryList[indexPath.row])
         AddV.delegate = self
+       
         self.navigationController?.pushViewController(AddV, animated: true)
     }
 }

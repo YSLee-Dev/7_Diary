@@ -19,6 +19,8 @@ enum Mode{
 
 class AddViewController: UIViewController {
     
+    
+    
     var titleBG : UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(hue: 0.6083, saturation: 0.72, brightness: 0.35, alpha: 1.0)
@@ -124,7 +126,9 @@ class AddViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         
+        
     }
+    
     
     private func loadEdit(Diary : Diary){
         self.view.backgroundColor = .white
@@ -212,6 +216,9 @@ class AddViewController: UIViewController {
         ])
     }
     
+    deinit{
+        NotificationCenter.default.removeObserver(self)
+    }
     
     // 텍스트 입력 여부 확인
     private func inputCheck(){
@@ -327,7 +334,6 @@ extension AddViewController : Datasend{
     }
     
     func edit(date: Date) {
-        
         self.bgView.removeFromSuperview()
         
         self.navigationItem.title = dateToString(date: date)
@@ -337,5 +343,9 @@ extension AddViewController : Datasend{
         
         self.navigationItem.rightBarButtonItems![0] = self.editBtn!
         self.navigationItem.rightBarButtonItems![1].isEnabled = true
+        
+        let diary = Diary(title: self.titleTF.text!, contents: self.contentsTV.text, date: date, star: false)
+        
+        NotificationCenter.default.post(name: NSNotification.Name("edit"), object: diary, userInfo: ["row":self.detailIndexPath!.row])
     }
 }
