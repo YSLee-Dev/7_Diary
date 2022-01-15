@@ -22,7 +22,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         UINavigationBar.appearance().prefersLargeTitles = true
         
         let v1 = UINavigationController(rootViewController: ViewController())
-        let v2 = UINavigationController(rootViewController: SubViewController())
+        let v2 = UINavigationController(rootViewController: StarViewController())
         
         v1.tabBarItem.title = "일기장"
         v1.tabBarItem.selectedImage = UIImage(systemName: "folder.fill")

@@ -141,7 +141,7 @@ class AddViewController: UIViewController {
         self.view.backgroundColor = .white
         self.title = "일기작성"
         
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title:"", style: .done, target: self, action: #selector(saveBtnClick(_:)))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title:"확인", style: .done, target: self, action: #selector(saveBtnClick(_:)))
         self.navigationItem.rightBarButtonItem?.isEnabled = false
     }
     
