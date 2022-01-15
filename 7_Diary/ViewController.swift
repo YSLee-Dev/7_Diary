@@ -116,6 +116,10 @@ class ViewController: UIViewController {
 
 // 다이어리 추가
 extension ViewController : AddDiaryDelegate{
+    func starSelect(PIndexPath: IndexPath, star: Bool) {
+        self.diaryList[PIndexPath.row].star = star
+    }
+    
     func deleteDiary(PIndexPath: IndexPath) {
         self.diaryList.remove(at: PIndexPath.row)
         self.collectionView.deleteItems(at: [PIndexPath])

@@ -10,6 +10,7 @@ import UIKit
 protocol AddDiaryDelegate:AnyObject {
     func valueRegister(diary:Diary)
     func deleteDiary(PIndexPath : IndexPath)
+    func starSelect(PIndexPath : IndexPath, star : Bool)
 }
 
 enum Mode{
@@ -98,9 +99,11 @@ class AddViewController: UIViewController {
     var editBtn : UIBarButtonItem?
     var deleteBtn : UIBarButtonItem?
     var editOkBtn : UIBarButtonItem?
+    var starBtn : UIBarButtonItem?
     var detailIndexPath:IndexPath?
+    var isStar:Bool = false
     
-
+    
     override func viewDidLoad() {
         
         viewSetup()
@@ -108,7 +111,6 @@ class AddViewController: UIViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-        
         
     }
     
@@ -119,23 +121,27 @@ class AddViewController: UIViewController {
         self.titleTF.text = Diary.title
         self.contentsTV.text = Diary.contents
         self.title = dateToString(date: Diary.date)
+        self.isStar = Diary.star
         
         self.titleTF.isEnabled = false
         self.contentsTV.isEditable = false
         
-        self.editBtn = UIBarButtonItem(title: "수정", style: .plain, target: self, action: #selector(editBtnClick(_:)))
-        self.deleteBtn = UIBarButtonItem(title: "삭제", style: .plain, target: self, action: #selector(deleteBtnClick(_:)))
-        self.editOkBtn = UIBarButtonItem(title: "수정완료", style: .plain, target: self, action: #selector(saveBtnClick(_:)))
         
-        self.navigationItem.setRightBarButtonItems([self.editBtn!,self.deleteBtn!], animated: true)
+        self.editBtn = UIBarButtonItem(image: UIImage(systemName: "square.and.pencil"), style: .plain, target: self, action: #selector(editBtnClick(_:)))
+        self.deleteBtn = UIBarButtonItem(image: UIImage(systemName: "trash"), style: .plain, target: self, action: #selector(deleteBtnClick(_:)))
+        self.editOkBtn = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.down"), style: .plain, target: self, action: #selector(saveBtnClick(_:)))
+        self.starBtn = UIBarButtonItem(image: nil, style: .done, target: self, action: #selector(starBtnClick(_:)))
+        
+        self.navigationItem.setRightBarButtonItems([self.editBtn!,self.deleteBtn!,self.starBtn!], animated: true)
         self.navigationItem.rightBarButtonItems![1].tintColor = .red
+        self.starBtn?.image = Diary.star ? UIImage(systemName: "star.fill") : UIImage(systemName: "star")
     }
     
     private func loadAdd(){
         self.view.backgroundColor = .white
         self.title = "일기작성"
         
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "확인", style: .done, target: self, action: #selector(saveBtnClick(_:)))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title:"", style: .done, target: self, action: #selector(saveBtnClick(_:)))
         self.navigationItem.rightBarButtonItem?.isEnabled = false
     }
     
@@ -249,6 +255,18 @@ class AddViewController: UIViewController {
         
         self.navigationItem.rightBarButtonItems![0] = self.editOkBtn!
         self.navigationItem.rightBarButtonItems![1].isEnabled = false
+        self.navigationItem.rightBarButtonItems![2].isEnabled = false
+    }
+    
+    // 즐겨찾기버튼 클릭 시
+    @objc func starBtnClick(_ sender:Any){
+        if self.isStar{
+            self.starBtn?.image = UIImage(systemName: "star")
+        }else{
+            self.starBtn?.image = UIImage(systemName: "star.fill")
+        }
+        self.isStar = !isStar
+        self.delegate?.starSelect(PIndexPath: self.detailIndexPath!, star: self.isStar)
     }
     
     // 날짜 데이터 변환
@@ -265,6 +283,7 @@ class AddViewController: UIViewController {
         self.view.endEditing(true)
     }
     
+    // 작성 필요
     @objc func keyboardShow(_ sender: Notification) {
         let userInfo:NSDictionary = sender.userInfo! as NSDictionary
         let keyboardFrame:NSValue = userInfo.value(forKey: UIResponder.keyboardFrameEndUserInfoKey) as! NSValue
@@ -272,9 +291,9 @@ class AddViewController: UIViewController {
         let keyboardHeight = keyboardRectangle.height
         self.keyHeight = keyboardHeight
 
-       
     }
     
+    // 작성 필요
     @objc func keyboardHide(_ sender: Notification) {
         
     }
@@ -314,6 +333,7 @@ extension AddViewController : Datasend{
         
         self.navigationItem.rightBarButtonItems![0] = self.editBtn!
         self.navigationItem.rightBarButtonItems![1].isEnabled = true
+        self.navigationItem.rightBarButtonItems![2].isEnabled = true
         
         let diary = Diary(title: self.titleTF.text!, contents: self.contentsTV.text, date: date, star: false)
         
