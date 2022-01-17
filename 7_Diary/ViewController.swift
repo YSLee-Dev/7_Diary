@@ -35,7 +35,9 @@ class ViewController: UIViewController {
         viewSet()
         loadData()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(NCEdit(_:)), name: NSNotification.Name("edit"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(NCEdit(_:)), name: NSNotification.Name("editDiary"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(starSelect(_:)), name: NSNotification.Name("starDiary"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(deleteDiary(_:)), name: NSNotification.Name("deleteDiary"), object: nil)
     }
     
     
@@ -101,7 +103,7 @@ class ViewController: UIViewController {
         self.navigationController?.pushViewController(addC, animated: true)
     }
     
-    // 노티피케이션 받기
+    // 수정사항 저장
     @objc private func NCEdit(_ NC:Notification){
         guard let ncDiary = NC.object as? Diary else {return}
         guard let row = NC.userInfo!["row"] as? Int else {return}
@@ -112,19 +114,27 @@ class ViewController: UIViewController {
         }
         self.collectionView.reloadData()
     }
+    
+    // 즐겨찾기 저장
+    @objc func starSelect(_ NC: Notification) {
+        guard let data = NC.object as? [String:Any] else {return}
+        guard let indexPath = data["indexPath"] as? IndexPath else {return}
+        guard let star = data["star"] as? Bool else {return}
+        
+        self.diaryList[indexPath.row].star = star
+    }
+    
+    // 다이어리 삭제
+    @objc func deleteDiary(_ NC : Notification) {
+        guard let indexPath = NC.object as? IndexPath else {return}
+        
+        self.diaryList.remove(at: indexPath.row)
+        self.collectionView.deleteItems(at: [indexPath])
+    }
 }
 
 // 다이어리 추가
 extension ViewController : AddDiaryDelegate{
-    func starSelect(PIndexPath: IndexPath, star: Bool) {
-        self.diaryList[PIndexPath.row].star = star
-    }
-    
-    func deleteDiary(PIndexPath: IndexPath) {
-        self.diaryList.remove(at: PIndexPath.row)
-        self.collectionView.deleteItems(at: [PIndexPath])
-    }
-    
     func valueRegister(diary: Diary) {
         self.diaryList.append(diary)
         self.diaryList = diaryList.sorted(by: {

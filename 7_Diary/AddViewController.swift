@@ -9,8 +9,6 @@ import UIKit
 
 protocol AddDiaryDelegate:AnyObject {
     func valueRegister(diary:Diary)
-    func deleteDiary(PIndexPath : IndexPath)
-    func starSelect(PIndexPath : IndexPath, star : Bool)
 }
 
 enum Mode{
@@ -19,9 +17,6 @@ enum Mode{
 }
 
 class AddViewController: UIViewController {
-    
-    
-    
     var titleBG : UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(hue: 0.6083, saturation: 0.72, brightness: 0.35, alpha: 1.0)
@@ -244,7 +239,8 @@ class AddViewController: UIViewController {
     // 삭제버튼 클릭 시
     @objc func deleteBtnClick(_ sender:Any){
         guard let index = self.detailIndexPath else {return}
-        self.delegate?.deleteDiary(PIndexPath: index)
+        // self.delegate?.deleteDiary(PIndexPath: index)
+        NotificationCenter.default.post(name: NSNotification.Name("deleteDiary"), object: index, userInfo: nil)
         self.navigationController?.popViewController(animated: true)
     }
     
@@ -258,7 +254,7 @@ class AddViewController: UIViewController {
         self.navigationItem.rightBarButtonItems![2].isEnabled = false
     }
     
-    // 즐겨찾기버튼 클릭 시
+    // 즐겨찾기 버튼 클릭 시
     @objc func starBtnClick(_ sender:Any){
         if self.isStar{
             self.starBtn?.image = UIImage(systemName: "star")
@@ -266,7 +262,14 @@ class AddViewController: UIViewController {
             self.starBtn?.image = UIImage(systemName: "star.fill")
         }
         self.isStar = !isStar
-        self.delegate?.starSelect(PIndexPath: self.detailIndexPath!, star: self.isStar)
+        // self.delegate?.starSelect(PIndexPath: self.detailIndexPath!, star: self.isStar)
+        NotificationCenter.default.post(
+            name: NSNotification.Name("starDiary"),
+            object: [
+                "star" : self.isStar,
+                "indexPath" : self.detailIndexPath!
+        ],
+            userInfo: nil)
     }
     
     // 날짜 데이터 변환
@@ -337,6 +340,6 @@ extension AddViewController : Datasend{
         
         let diary = Diary(title: self.titleTF.text!, contents: self.contentsTV.text, date: date, star: false)
         
-        NotificationCenter.default.post(name: NSNotification.Name("edit"), object: diary, userInfo: ["row":self.detailIndexPath!.row])
+        NotificationCenter.default.post(name: NSNotification.Name("editDiary"), object: diary, userInfo: ["row":self.detailIndexPath!.row])
     }
 }
