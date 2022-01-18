@@ -69,6 +69,7 @@ class ViewController: UIViewController {
     private func saveData(){
         let data = self.diaryList.map{
             [
+                "uuid" : $0.uuid,
                 "title":$0.title,
                 "contents":$0.contents,
                 "star":$0.star,
@@ -84,12 +85,13 @@ class ViewController: UIViewController {
         let ud = UserDefaults.standard
         guard let data = ud.value(forKey: "diaryList") as? [[String:Any]] else{  return }
         self.diaryList = data.compactMap{
+            guard let uuid = $0["uuid"] as? String else{return nil}
             guard let title = $0["title"] as? String else{return nil}
             guard let contents = $0["contents"] as? String else{return nil}
             guard let star = $0["star"] as? Bool else{return nil}
             guard let date = $0["date"] as? Date else{return nil}
             
-            return Diary(title: title, contents: contents, date: date, star: star)
+            return Diary(uuid: uuid, title: title, contents: contents, date: date, star: star)
         }
         self.diaryList = diaryList.sorted(by: {
             $0.date.compare($1.date) == .orderedDescending
@@ -106,9 +108,11 @@ class ViewController: UIViewController {
     // 수정사항 저장
     @objc private func NCEdit(_ NC:Notification){
         guard let ncDiary = NC.object as? Diary else {return}
-        guard let row = NC.userInfo!["row"] as? Int else {return}
+        guard let index = self.diaryList.firstIndex(where: {
+            $0.uuid == ncDiary.uuid
+        }) else {return}
         
-        self.diaryList[row] = ncDiary
+        self.diaryList[index] = ncDiary
         self.diaryList = diaryList.sorted{
             $0.date.compare($1.date) == .orderedDescending
         }
@@ -118,18 +122,25 @@ class ViewController: UIViewController {
     // 즐겨찾기 저장
     @objc func starSelect(_ NC: Notification) {
         guard let data = NC.object as? [String:Any] else {return}
-        guard let indexPath = data["indexPath"] as? IndexPath else {return}
+        guard let uuid = data["uuid"] as? String else {return}
         guard let star = data["star"] as? Bool else {return}
         
-        self.diaryList[indexPath.row].star = star
+        guard let index = self.diaryList.firstIndex(where: {
+            $0.uuid == uuid
+        }) else {return}
+        
+        self.diaryList[index].star = star
     }
     
     // 다이어리 삭제
     @objc func deleteDiary(_ NC : Notification) {
-        guard let indexPath = NC.object as? IndexPath else {return}
+        guard let uuid = NC.object as? String else {return}
+        guard let index = self.diaryList.firstIndex(where: {
+            $0.uuid == uuid
+        }) else {return}
         
-        self.diaryList.remove(at: indexPath.row)
-        self.collectionView.deleteItems(at: [indexPath])
+        self.diaryList.remove(at: index)
+        self.collectionView.deleteItems(at: [IndexPath(row: index, section: 0)])
     }
 }
 

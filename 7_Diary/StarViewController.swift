@@ -23,10 +23,11 @@ class StarViewController: UIViewController {
     
     override func viewDidLoad() {
         viewSet()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
         loadDiaryList()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(editDiary(_:)), name: NSNotification.Name("editDiary"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(deleteDiary(_:)), name: NSNotification.Name("deleteDiary"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(starDiary(_:)), name: NSNotification.Name("starDiary"), object: nil)
     }
     
     private func loadDiaryList(){
@@ -35,18 +36,18 @@ class StarViewController: UIViewController {
             guard let star = $0["star"] as? Bool else {return nil}
             
             if star {
+                guard let uuid = $0["uuid"] as? String else{return nil}
                 guard let title = $0["title"] as? String else {return nil}
                 guard let contents = $0["contents"] as? String else {return nil}
                 guard let date = $0["date"] as? Date else {return nil}
                 
-                return Diary(title: title, contents: contents, date: date, star: star)
+                return Diary(uuid: uuid, title: title, contents: contents, date: date, star: star)
             }else{
                 return nil
             }
         }.sorted(by: {
             $0.date.compare($1.date) == .orderedDescending
         })
-        self.collectionView.reloadData()
     }
     
     private func viewSet(){
@@ -71,6 +72,56 @@ class StarViewController: UIViewController {
         formmater.dateFormat = "yy.MM.dd | EEEEE"
         
         return formmater.string(from: date)
+    }
+    
+    // 삭제되었을 때
+    @objc func deleteDiary(_ NC:Notification){
+        guard let uuid = NC.object as? String else {return}
+        guard let index = self.diaryList.firstIndex(where: {
+            $0.uuid == uuid
+        }) else {return}
+        
+        
+        self.diaryList.remove(at: index)
+        self.collectionView.deleteItems(at: [IndexPath(row: index, section: 0)])
+    }
+    
+    // 수정되었을 때
+    @objc func editDiary(_ NC:Notification){
+        guard let ncDiary = NC.object as? Diary else {return}
+        guard let index = self.diaryList.firstIndex(where: {
+            $0.uuid == ncDiary.uuid
+        }) else {return}
+        
+        self.diaryList[index] = ncDiary
+        self.diaryList = diaryList.sorted{
+            $0.date.compare($1.date) == .orderedDescending
+        }
+        self.collectionView.reloadData()
+    }
+    
+    // 즐겨찾기가 수정되었을 때
+    @objc func starDiary (_ NC:Notification){
+        guard let nc = NC.object as? [String:Any] else {return}
+        guard let diary = nc["Diary"] as? Diary else {return}
+        guard let uuid = nc["uuid"] as? String else {return}
+        guard let star = nc["star"] as? Bool else {return}
+        
+        if star {
+            self.diaryList.append(diary)
+            self.diaryList = self.diaryList.sorted(by: {
+                $0.date.compare($1.date) == .orderedDescending
+            })
+            self.collectionView.reloadData()
+        }else{
+            guard let index = self.diaryList.firstIndex(where: {
+                $0.uuid == uuid
+            }) else {return}
+            
+            self.diaryList.remove(at: index)
+            self.collectionView.deleteItems(at: [IndexPath(row: index, section: 0)])
+        }
+        
     }
 }
 

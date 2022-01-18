@@ -97,6 +97,8 @@ class AddViewController: UIViewController {
     var starBtn : UIBarButtonItem?
     var detailIndexPath:IndexPath?
     var isStar:Bool = false
+    var date:Date?
+    var uuid : String?
     
     
     override func viewDidLoad() {
@@ -116,7 +118,9 @@ class AddViewController: UIViewController {
         self.titleTF.text = Diary.title
         self.contentsTV.text = Diary.contents
         self.title = dateToString(date: Diary.date)
+        self.date = Diary.date
         self.isStar = Diary.star
+        self.uuid = Diary.uuid
         
         self.titleTF.isEnabled = false
         self.contentsTV.isEditable = false
@@ -238,9 +242,8 @@ class AddViewController: UIViewController {
     
     // 삭제버튼 클릭 시
     @objc func deleteBtnClick(_ sender:Any){
-        guard let index = self.detailIndexPath else {return}
         // self.delegate?.deleteDiary(PIndexPath: index)
-        NotificationCenter.default.post(name: NSNotification.Name("deleteDiary"), object: index, userInfo: nil)
+        NotificationCenter.default.post(name: NSNotification.Name("deleteDiary"), object: self.uuid!, userInfo: nil)
         self.navigationController?.popViewController(animated: true)
     }
     
@@ -266,8 +269,9 @@ class AddViewController: UIViewController {
         NotificationCenter.default.post(
             name: NSNotification.Name("starDiary"),
             object: [
+                "Diary" : Diary(uuid: self.uuid!, title: self.titleTF.text!, contents: self.contentsTV.text, date: self.date! , star: self.isStar),
                 "star" : self.isStar,
-                "indexPath" : self.detailIndexPath!
+                "uuid" : self.uuid!
         ],
             userInfo: nil)
     }
@@ -317,7 +321,7 @@ extension AddViewController : Datasend{
         guard let title = self.titleTF.text else {return}
         guard let contents = self.contentsTV.text else {return}
         
-        let diary = Diary(title: title, contents: contents, date: date, star: false)
+        let diary = Diary(uuid: UUID().uuidString, title: title, contents: contents, date: date, star: false)
         self.delegate?.valueRegister(diary: diary)
         self.navigationController?.popViewController(animated: true)
     }
@@ -333,13 +337,14 @@ extension AddViewController : Datasend{
         
         self.titleTF.isEnabled = true
         self.contentsTV.isEditable = true
+        self.date = date
         
         self.navigationItem.rightBarButtonItems![0] = self.editBtn!
         self.navigationItem.rightBarButtonItems![1].isEnabled = true
         self.navigationItem.rightBarButtonItems![2].isEnabled = true
         
-        let diary = Diary(title: self.titleTF.text!, contents: self.contentsTV.text, date: date, star: false)
+        let diary = Diary(uuid: self.uuid!, title: self.titleTF.text!, contents: self.contentsTV.text, date: self.date!, star: self.isStar)
         
-        NotificationCenter.default.post(name: NSNotification.Name("editDiary"), object: diary, userInfo: ["row":self.detailIndexPath!.row])
+        NotificationCenter.default.post(name: NSNotification.Name("editDiary"), object: diary, userInfo: nil)
     }
 }
