@@ -108,6 +108,7 @@ class AddViewController: UIViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(starBtnSync(_:)), name: NSNotification.Name("starViewDelete"), object: nil)
         
     }
     
@@ -124,7 +125,6 @@ class AddViewController: UIViewController {
         
         self.titleTF.isEnabled = false
         self.contentsTV.isEditable = false
-        
         
         self.editBtn = UIBarButtonItem(image: UIImage(systemName: "square.and.pencil"), style: .plain, target: self, action: #selector(editBtnClick(_:)))
         self.deleteBtn = UIBarButtonItem(image: UIImage(systemName: "trash"), style: .plain, target: self, action: #selector(deleteBtnClick(_:)))
@@ -274,6 +274,13 @@ class AddViewController: UIViewController {
                 "uuid" : self.uuid!
         ],
             userInfo: nil)
+        
+    }
+    
+    // 즐겨찾기 버튼 동기화
+    @objc func starBtnSync(_ NC:Notification){
+        self.isStar = false
+        self.starBtn?.image = UIImage(systemName: "star")
     }
     
     // 날짜 데이터 변환

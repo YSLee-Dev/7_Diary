@@ -22,8 +22,8 @@ class StarViewController: UIViewController {
     var cellId = "cell"
     
     override func viewDidLoad() {
-        viewSet()
         loadDiaryList()
+        viewSet()
         
         NotificationCenter.default.addObserver(self, selector: #selector(editDiary(_:)), name: NSNotification.Name("editDiary"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(deleteDiary(_:)), name: NSNotification.Name("deleteDiary"), object: nil)
@@ -110,18 +110,18 @@ class StarViewController: UIViewController {
         if star {
             self.diaryList.append(diary)
             self.diaryList = self.diaryList.sorted(by: {
-                $0.date.compare($1.date) == .orderedDescending
+                $0.date.compare($1.date) == .orderedAscending
             })
             self.collectionView.reloadData()
-        }else{
-            guard let index = self.diaryList.firstIndex(where: {
+        }else {
+            let index = self.diaryList.firstIndex(where: {
                 $0.uuid == uuid
-            }) else {return}
-            
-            self.diaryList.remove(at: index)
-            self.collectionView.deleteItems(at: [IndexPath(row: index, section: 0)])
+            })
+            self.diaryList.remove(at: index!)
+            self.collectionView.reloadData()
+            NotificationCenter.default.post(name: NSNotification.Name("starViewDelete"), object: nil, userInfo: nil)
+            self.navigationController?.popViewController(animated: true)
         }
-        
     }
 }
 

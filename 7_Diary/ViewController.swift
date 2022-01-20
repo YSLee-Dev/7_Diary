@@ -78,7 +78,6 @@ class ViewController: UIViewController {
         }
         let ud = UserDefaults.standard
         ud.setValue(data, forKey: "diaryList")
-        print("저장완료")
     }
     
     private func loadData(){
